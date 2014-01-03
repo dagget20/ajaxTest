@@ -1,1 +1,41 @@
-<p>prueba</p>
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Ajax Tester </title>
+	</head>
+	<body>
+		<form action="content" method="post">
+			<label>Name:</label>
+			<input type="text" id="city" name="city" />
+			<input type="submit" value="enviar">
+		</form>
+		<ul> </ul>
+		<script src="js/jquery-2.0.3.js"></script>
+		<script>
+			
+		
+			$(document).ready(function(){
+				var Hotel = {
+				getHotel: function(location){
+					var promise = $.ajax({
+						url: "http://api.ean.com/ean-services/rs/hotel/v3/list?id=55505&minorRev=99&apiKey=cbrzfta369qwyrm9t5b8y8kf&locale=en_US&currencyCode=USD",
+						dataType: 'jsonp',
+						contentType: 'application/json',
+						data: { "city": location}
+					});
+					return promise;
+				}
+			};
+		
+				$('form').on('submit', function(evt){
+					evt.preventDefault();
+					var location = $('#city').val();
+					Hotel.getHotel(location).done(function(result){
+						console.log(result.HotelListResponse.HotelList.HotelSummary[0].name);
+					});
+					
+				});
+			});
+		</script>
+	</body>
+</html>

@@ -9,7 +9,7 @@
 			<input type="text" id="city" name="city" />
 			<input type="submit" value="enviar">
 		</form>
-		<p> </p>
+		<ul> </ul>
 		<script src="js/jquery-2.0.3.js"></script>
 		<script>
 			$(document).ready(function(){
@@ -25,14 +25,16 @@
 							var hotels = result.HotelListResponse.HotelList.HotelSummary;
 							var list = "<li></li>";
 							$.each(hotels, function(index,item){
-								console.log(item.name);
+								$('ul').append("<li class='hotel"+ index + "'>"+ item.name +"</li>");
+								console.log(index);
 								var hotelId = item.hotelId;
 							$.ajax({
 								url: "http://api.ean.com/ean-services/rs/hotel/v3/info?id=55505&minorRev=99&apiKey=cbrzfta369qwyrm9t5b8y8kf&locale=en_US&currencyCode=USD&" + "hotelId=" + hotelId,  
 								dataType: 'jsonp',
 								contentType: 'application/json',
 								success: function(resultado){
-									console.log(resultado.HotelInformationResponse.HotelSummary.highRate);
+									var price = resultado.HotelInformationResponse.HotelSummary.highRate;
+									$(".hotel"+index).append("<p>" + price + "</p>");
 								}
 							});	
 								
