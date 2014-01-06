@@ -17,22 +17,45 @@
 			$(document).ready(function(){
 				var Hotel = {
 				getHotel: function(location){
-					var promise = $.ajax({
+					var promise = $.Deferred(); 
+					$.ajax({
 						url: "http://api.ean.com/ean-services/rs/hotel/v3/list?id=55505&minorRev=99&apiKey=cbrzfta369qwyrm9t5b8y8kf&locale=en_US&currencyCode=USD",
 						dataType: 'jsonp',
 						contentType: 'application/json',
-						data: { "city": location}
+						data: {city: location},
+						sucess: function(result){
+							promise.resolve(result.HotelListResponse.HotelList.HotelSummary[0].name);
+						}
 					});
 					return promise;
-				}
-			};
+					}
+				};
+				
+				var Price = {
+					getPrice: function(hotelId){
+						var promise = $.Deferred();
+						$.ajax({
+							url: "http://api.ean.com/ean-services/rs/info/v3/list?id=55505&minorRev=99&apiKey=cbrzfta369qwyrm9t5b8y8kf&locale=en_US&currencyCode=USD",
+							dataType: 'jsonp',
+							contentType: 'application/json',
+							data: {hotelId: hotelId},
+							succes: function(result){
+								promise.resolve(result.HotelInformationResponse.HotelSummary.highRate);
+							}
+						});
+					}
+				};
+				
 		
 				$('form').on('submit', function(evt){
 					evt.preventDefault();
 					var location = $('#city').val();
-					Hotel.getHotel(location).done(function(result){
-						console.log(result.HotelListResponse.HotelList.HotelSummary[0].name);
+					var hotelId = Hotel.getHotel(location);
+					$.when( hotelId, Price.getPrice(hotelId) ).then( function(hotelInfo, hotelPrice){
+						console.log(hotelInfo);
+						console.log(hotelPrice);
 					});
+					
 					
 				});
 			});

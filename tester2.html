@@ -1,0 +1,54 @@
+<!DOCTYPE  html>
+<html>
+	<head> <title>Basic Test </title></head>
+	<body>	
+		
+		<script type="text/javascript" src="js/jquery-2.0.3.js"> </script>
+		<script>
+			var cities = ["Lima", "Bogota", "Buenos Aires"];
+			var Hotel = {
+				getHotel: function(city){
+					var hotelInfo = $.ajax({
+					url: "http://api.ean.com/ean-services/rs/hotel/v3/list?id=55505&minorRev=99&apiKey=cbrzfta369qwyrm9t5b8y8kf&locale=en_US&currencyCode=USD",
+					dataType: 'jsonp',
+					contentType: 'application/json',
+					data: {city:city}
+					});
+					return hotelInfo;
+				}
+			};
+			
+			var Price = {
+				getPrice: function(hotelId){
+					var hotelPrice = $.ajax({
+					url: "http://api.ean.com/ean-services/rs/hotel/v3/info?id=55505&minorRev=99&apiKey=cbrzfta369qwyrm9t5b8y8kf&locale=en_US&currencyCode=USD",
+					dataType: 'jsonp',
+					contentType: 'application/json',
+					data: {hotelId:hotelId}	
+					});
+					return hotelPrice;
+				}
+			};
+			
+			
+			$.each(cities, function(index,item){
+				console.log(item);
+				Hotel.getHotel(item).done(function(getHotelResponse){
+					var hotelList = getHotelResponse.HotelListResponse.HotelList.HotelSummary;
+					$.each(hotelList, function(i,v){
+						console.log(v.name);
+						console.log(v.hotelId);
+						var hotelId = v.hotelId;
+						Price.getPrice(hotelId).done(function(getPriceResult){
+							var hotelPrice = getPriceResult.HotelInformationResponse.HotelSummary.highRate;
+							console.log(hotelPrice);
+						});
+					});
+				});
+			});
+			
+
+		</script>
+	</body>
+	
+</html>

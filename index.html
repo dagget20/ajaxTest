@@ -5,8 +5,10 @@
 	</head>
 	<body>
 		<form action="content" method="post">
-			<label>Name:</label>
+			<label>City:</label>
 			<input type="text" id="city" name="city" />
+			<label>Budget:</label>
+			<input type="text" id="price" name="city" />
 			<input type="submit" value="enviar">
 		</form>
 		<ul> </ul>
@@ -20,7 +22,7 @@
 						url: "http://api.ean.com/ean-services/rs/hotel/v3/list?id=55505&minorRev=99&apiKey=cbrzfta369qwyrm9t5b8y8kf&locale=en_US&currencyCode=USD",
 						dataType: 'jsonp',
 						contentType: 'application/json',
-						data: $('form').serialize(),
+						data: {city:$('#city').val()},
 						success: function(result){
 							var hotels = result.HotelListResponse.HotelList.HotelSummary;
 							var list = "<li></li>";
@@ -34,7 +36,10 @@
 								contentType: 'application/json',
 								success: function(resultado){
 									var price = resultado.HotelInformationResponse.HotelSummary.highRate;
-									$(".hotel"+index).append("<p>" + price + "</p>");
+									var priceNeed = $('#price').val();
+									if (price < priceNeed){
+										$(".hotel"+index).append("<p>" + price + "</p>");
+									}
 								}
 							});	
 								
