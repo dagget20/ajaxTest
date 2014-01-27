@@ -3,6 +3,19 @@
 	<head> <title>Basic Test </title></head>
 	<body>	
 		
+		<form>
+			<label>Budget</label>
+			<input type="text" id="tripPrice"  />
+			<label>Departure:</label>
+			<input type="text" id="departureDate" />
+			<label>Return:</label>
+			<input type="text" id="returnDate" />
+			<input type="submit" value="Tripea!"/>
+		</form>
+		<ul id="result">
+			
+		</ul>
+		
 		<script type="text/javascript" src="js/jquery-2.0.3.js"> </script>
 		<script>
 			var cities = ["Lima", "Bogota", "Buenos Aires"];
@@ -20,9 +33,12 @@
 			
 			var Price = {
 				getPrice: function(hotelId){
+					var aDate = $('#departureDate').val();
+					var dDate = $('#returnDate').val();
 					var hotelPrice = $.ajax({
-					url: "http://api.ean.com/ean-services/rs/hotel/v3/info?id=55505&minorRev=99&apiKey=cbrzfta369qwyrm9t5b8y8kf&locale=en_US&currencyCode=USD",
+					url: "http://api.ean.com/ean-services/rs/hotel/v3/avail?id=55505&minorRev=99&apiKey=cbrzfta369qwyrm9t5b8y8kf&locale=en_US&currencyCode=USD",
 					dataType: 'jsonp',
+					data: {arrivalDate: aDate, departureDate: dDate},
 					contentType: 'application/json',
 					data: {hotelId:hotelId}	
 					});
@@ -30,22 +46,31 @@
 				}
 			};
 			
-			
-			$.each(cities, function(index,item){
+			$('form').on('submit', function(evt){
+				evt.preventDefault();
+				$.each(cities, function(index,item){
 				console.log(item);
 				Hotel.getHotel(item).done(function(getHotelResponse){
 					var hotelList = getHotelResponse.HotelListResponse.HotelList.HotelSummary;
 					$.each(hotelList, function(i,v){
 						console.log(v.name);
 						console.log(v.hotelId);
+						var hotelName = v.name;
 						var hotelId = v.hotelId;
 						Price.getPrice(hotelId).done(function(getPriceResult){
-							var hotelPrice = getPriceResult.HotelInformationResponse.HotelSummary.highRate;
-							console.log(hotelPrice);
+								var hotelPrice = getPriceResult.HotelRoomAvailabilityResponse.HotelRoomResponse.RateInfo.ChargeableRateInfo.total;
+								var tripPrice = $('#tripPrice').val();
+								if (hotelPrice < tripPrice){
+									$('#result').append("<li>" + hotelName + "</li>");
+									$('#result').append("<li>" + hotelPrice + "</li>");
+									console.log(hotelPrice);
+								} 
+							});
 						});
 					});
-				});
+				});	
 			});
+			
 			
 
 		</script>
